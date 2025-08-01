@@ -11,11 +11,20 @@ interface Tab {
 }
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState(() => {
-    const savedTab = getCookie('activeTab');
-    return savedTab ? String(savedTab) : 'generator';
-  });
+  const [activeTab, setActiveTab] = useState('generator');
   const [isTabMenuOpen, setIsTabMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      const savedTab = getCookie('activeTab');
+      if (savedTab) {
+        setActiveTab(String(savedTab));
+      }
+      setMounted(true);
+    }
+  }, []);
 
   const [generatedCode, setGeneratedCode] = useState('');
   const [formData, setFormData] = useState({
@@ -147,7 +156,10 @@ export default function Home() {
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
-    setCookie('activeTab', tabId, { maxAge: 60 * 60 * 24 * 7 }); // 1 week
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      setCookie('activeTab', tabId, { maxAge: 60 * 60 * 24 * 7 }); // 1 week
+    }
     setIsTabMenuOpen(false); // Close menu when tab is selected
   };
 
@@ -603,58 +615,97 @@ export default function Home() {
 
   const activeTabContent = tabs.find(tab => tab.id === activeTab);
 
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-5">
+        <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg p-8 shadow-lg">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-gray-600 dark:text-gray-300">Loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5', padding: '20px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', backgroundColor: 'white', borderRadius: '10px', padding: '30px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-5">
+      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg p-8 shadow-lg">
         {/* Tab Navigation with Hamburger Menu */}
-        <div style={{ borderBottom: '2px solid #e9ecef', marginBottom: '30px' }}>
+        <div className="border-b-2 border-gray-200 dark:border-gray-700 mb-8">
           {/* Desktop Tab Navigation */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', flex: 1 }}>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            minHeight: '60px'
+          }}>
+            <div style={{ 
+              display: 'flex', 
+              flexDirection: 'row', 
+              gap: '8px', 
+              flex: 1, 
+              overflowX: 'auto',
+              alignItems: 'center'
+            }}>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
                   style={{
-                    padding: '12px 24px',
+                    padding: '16px 20px',
                     border: 'none',
-                    backgroundColor: activeTab === tab.id ? '#007bff' : 'transparent',
-                    color: activeTab === tab.id ? 'white' : '#666',
                     borderRadius: '8px 8px 0 0',
                     cursor: 'pointer',
                     fontSize: '16px',
                     fontWeight: '500',
                     transition: 'all 0.3s ease',
                     display: 'flex',
+                    flexDirection: 'row',
                     alignItems: 'center',
-                    gap: '8px'
+                    gap: '8px',
+                    flexShrink: 0,
+                    backgroundColor: activeTab === tab.id ? '#2563eb' : 'transparent',
+                    color: activeTab === tab.id ? 'white' : '#374151',
+                    boxShadow: activeTab === tab.id ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none',
+                    borderBottom: activeTab === tab.id ? '4px solid #1d4ed8' : 'none'
                   }}
                 >
                   <span>{tab.icon}</span>
-                  <span style={{ display: 'inline' }}>{tab.name}</span>
+                  <span>{tab.name}</span>
                 </button>
               ))}
             </div>
 
-            {/* Mobile Hamburger Menu Button */}
+            {/* Desktop Hamburger Menu Button */}
             <button
               onClick={() => setIsTabMenuOpen(!isTabMenuOpen)}
-              style={{
-                display: 'block',
-                padding: '8px',
-                border: 'none',
-                backgroundColor: 'transparent',
+              style={{ 
+                padding: '12px',
+                borderRadius: '6px',
                 cursor: 'pointer',
-                borderRadius: '4px',
+                backgroundColor: 'white',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                flexShrink: 0,
+                alignSelf: 'center',
+                minHeight: '50px',
+                marginLeft: '16px',
+                height: '50px',
+                justifyContent: 'center',
+                border: '1px solid #e5e7eb',
                 transition: 'all 0.3s ease'
               }}
               aria-label="Toggle tab menu"
             >
-              <div style={{ width: '24px', height: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+              <div style={{ width: '20px', height: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <span 
                   style={{
                     display: 'block',
-                    width: '20px',
+                    width: '18px',
                     height: '2px',
                     backgroundColor: '#666',
                     transition: 'all 0.3s ease',
@@ -664,7 +715,7 @@ export default function Home() {
                 <span 
                   style={{
                     display: 'block',
-                    width: '20px',
+                    width: '18px',
                     height: '2px',
                     backgroundColor: '#666',
                     margin: '4px 0',
@@ -675,7 +726,7 @@ export default function Home() {
                 <span 
                   style={{
                     display: 'block',
-                    width: '20px',
+                    width: '18px',
                     height: '2px',
                     backgroundColor: '#666',
                     transition: 'all 0.3s ease',
@@ -686,16 +737,13 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Mobile Tab Menu */}
+          {/* Tab Menu Dropdown */}
           <div 
-            style={{
-              display: isTabMenuOpen ? 'block' : 'none',
-              backgroundColor: '#f8f9fa',
-              borderTop: '1px solid #dee2e6',
-              padding: '15px',
-              borderRadius: '0 0 8px 8px',
-              marginTop: '10px',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            className={`${
+              isTabMenuOpen ? 'block' : 'hidden'
+            } bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-600 p-4 rounded-b-lg mt-2 shadow-lg`}
+            style={{ 
+              display: isTabMenuOpen ? 'block' : 'none'
             }}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -706,21 +754,23 @@ export default function Home() {
                   style={{
                     padding: '12px 16px',
                     border: 'none',
-                    backgroundColor: activeTab === tab.id ? '#007bff' : 'transparent',
-                    color: activeTab === tab.id ? 'white' : '#666',
-                    borderRadius: '6px',
+                    borderRadius: '8px',
                     cursor: 'pointer',
                     fontSize: '16px',
-                    fontWeight: '500',
                     transition: 'all 0.3s ease',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    textAlign: 'left'
+                    gap: '12px',
+                    textAlign: 'left',
+                    backgroundColor: activeTab === tab.id ? '#2563eb' : 'transparent',
+                    color: activeTab === tab.id ? 'white' : '#374151',
+                    boxShadow: activeTab === tab.id ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none',
+                    borderLeft: activeTab === tab.id ? '4px solid #1d4ed8' : 'none',
+                    fontWeight: activeTab === tab.id ? '600' : '500'
                   }}
                 >
-                  <span>{tab.icon}</span>
-                  {tab.name}
+                  <span style={{ fontSize: '18px' }}>{tab.icon}</span>
+                  <span style={{ fontWeight: '600' }}>{tab.name}</span>
                 </button>
               ))}
             </div>
@@ -728,7 +778,7 @@ export default function Home() {
         </div>
 
         {/* Tab Content */}
-        <div style={{ minHeight: '500px' }}>
+        <div className="min-h-[500px]">
           {activeTabContent?.content}
         </div>
       </div>

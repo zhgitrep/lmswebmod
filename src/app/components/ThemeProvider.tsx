@@ -28,23 +28,30 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Get theme from cookie or system preference
-    const savedTheme = getCookie('theme') as Theme;
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initialTheme = savedTheme || systemTheme;
-    
-    setTheme(initialTheme);
-    setMounted(true);
-    
-    // Apply theme to document
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      // Get theme from cookie or system preference
+      const savedTheme = getCookie('theme') as Theme;
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const initialTheme = savedTheme || systemTheme;
+      
+      setTheme(initialTheme);
+      setMounted(true);
+      
+      // Apply theme to document
+      document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    }
   }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    setCookie('theme', newTheme, { maxAge: 60 * 60 * 24 * 365 }); // 1 year
-    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      setCookie('theme', newTheme, { maxAge: 60 * 60 * 24 * 365 }); // 1 year
+      document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    }
   };
 
   // Provide context even before mounting to prevent errors
