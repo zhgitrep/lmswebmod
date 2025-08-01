@@ -13,10 +13,6 @@ export default function Header() {
 
   const menuItems = [
     { name: 'Home', href: '/' },
-    { name: 'Pre-lab Questions', href: '/pre-lab' },
-    { name: 'Escape Room', href: '/escape-room' },
-    { name: 'Coding Races', href: '/coding-races' },
-    { name: 'About', href: '/about' },
   ];
 
   const handleMenuClick = (href: string) => {
