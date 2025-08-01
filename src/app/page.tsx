@@ -10,10 +10,16 @@ interface Tab {
   content: React.ReactNode;
 }
 
+interface TabItem {
+  id: string;
+  header: string;
+  content: string;
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = getCookie('activeTab');
-    return savedTab ? String(savedTab) : 'generator';
+    return savedTab ? String(savedTab) : 'tabs';
   });
   const [isTabMenuOpen, setIsTabMenuOpen] = useState(false);
 
@@ -25,6 +31,262 @@ export default function Home() {
     textColor: '#000000',
     fontSize: '16px'
   });
+
+  // Tabs functionality
+  const [tabItems, setTabItems] = useState<TabItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTabs = localStorage.getItem('tabs');
+      return savedTabs ? JSON.parse(savedTabs) : [
+        { id: '1', header: 'Step 1', content: '- Install VSCode\n-- Download from official website\n-- Install extensions\n- Install Chrome\n-- Download latest version\n-- Set as default browser' },
+        { id: '2', header: 'Step 2', content: '- Install Node.js\n-- Download LTS version\n-- Verify installation\n- Install Git\n-- Configure user settings\n-- Set up SSH keys' },
+        { id: '3', header: 'Step 3', content: '- Create project folder\n-- Initialize git repository\n-- Set up development environment\n- Install dependencies\n-- Run npm install\n-- Configure build tools' }
+      ];
+    }
+    return [];
+  });
+
+  const [activeTabId, setActiveTabId] = useState('1');
+  const [editingTabId, setEditingTabId] = useState<string | null>(null);
+  const [editingHeader, setEditingHeader] = useState('');
+
+  // Save tabs to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tabs', JSON.stringify(tabItems));
+    }
+  }, [tabItems]);
+
+  const addTab = () => {
+    if (tabItems.length >= 15) {
+      alert('Maximum 15 tabs allowed!');
+      return;
+    }
+    const newId = (Math.max(...tabItems.map(t => parseInt(t.id))) + 1).toString();
+    const newTab: TabItem = {
+      id: newId,
+      header: `Step ${newId}`,
+      content: '- New step content\n-- Add your content here\n-- Use - for first level\n-- Use -- for second level'
+    };
+    setTabItems([...tabItems, newTab]);
+    setActiveTabId(newId);
+  };
+
+  const removeTab = (id: string) => {
+    if (tabItems.length <= 1) {
+      alert('At least one tab must remain!');
+      return;
+    }
+    const newTabs = tabItems.filter(tab => tab.id !== id);
+    setTabItems(newTabs);
+    if (activeTabId === id) {
+      setActiveTabId(newTabs[0].id);
+    }
+  };
+
+  const updateTabHeader = (id: string, header: string) => {
+    setTabItems(tabItems.map(tab => 
+      tab.id === id ? { ...tab, header } : tab
+    ));
+    setEditingTabId(null);
+  };
+
+  const updateTabContent = (id: string, content: string) => {
+    setTabItems(tabItems.map(tab => 
+      tab.id === id ? { ...tab, content } : tab
+    ));
+  };
+
+  const startEditingHeader = (id: string, header: string) => {
+    setEditingTabId(id);
+    setEditingHeader(header);
+  };
+
+  const generateTabsHTML = () => {
+    const activeTabItem = tabItems.find(tab => tab.id === activeTabId);
+    if (!activeTabItem) return '';
+
+    // Convert content with dashes to HTML list
+    const convertContentToHTML = (content: string) => {
+      const lines = content.split('\n').filter(line => line.trim());
+      let html = '<ul>';
+      
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('-')) {
+          const level = (trimmed.match(/^-+/)?.[0].length || 1) - 1;
+          const text = trimmed.replace(/^-+\s*/, '');
+          const indent = '  '.repeat(level);
+          html += `${indent}<li>${text}</li>\n`;
+        }
+      });
+      
+      html += '</ul>';
+      return html;
+    };
+
+    const htmlCode = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabs Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .tabs-header {
+            display: flex;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+        }
+        .tab-button {
+            padding: 15px 25px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button:hover {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        .tab-button.active {
+            background-color: #007bff;
+            color: white;
+            border-bottom-color: #007bff;
+        }
+        .tab-content {
+            padding: 30px;
+            min-height: 400px;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        ul {
+            line-height: 1.6;
+            color: #555;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .copy-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            z-index: 1000;
+        }
+        .copy-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <button class="copy-button" onclick="copyCode()">📋 Copy Code</button>
+    
+    <div class="container">
+        <div class="tabs-header">
+${tabItems.map(tab => `
+            <button class="tab-button ${tab.id === activeTabId ? 'active' : ''}" onclick="showTab('${tab.id}')">
+                ${tab.header}
+            </button>`).join('')}
+        </div>
+        
+        <div class="tab-content">
+${tabItems.map(tab => `
+            <div id="tab-${tab.id}" class="tab-panel ${tab.id === activeTabId ? 'active' : ''}">
+                <h2>${tab.header}</h2>
+                ${convertContentToHTML(tab.content)}
+            </div>`).join('')}
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all tab panels
+            const panels = document.querySelectorAll('.tab-panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+            
+            // Remove active class from all buttons
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab panel
+            document.getElementById('tab-' + tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+        
+        function copyCode() {
+            const code = document.documentElement.outerHTML;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy code: ', err);
+                alert('Failed to copy code. Please try again.');
+            });
+        }
+        
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Tabs page loaded successfully!');
+            
+            // Add smooth transitions
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Add a subtle animation
+                    this.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>`;
+
+    return htmlCode;
+  };
+
+  const copyTabsCode = () => {
+    const code = generateTabsHTML();
+    navigator.clipboard.writeText(code);
+    alert('Tabs code copied to clipboard!');
+  };
 
   const generateHTMLCode = () => {
     const htmlCode = `<!DOCTYPE html>
@@ -151,7 +413,197 @@ export default function Home() {
     setIsTabMenuOpen(false); // Close menu when tab is selected
   };
 
-  // Tab content components
+  const TabsTab = () => (
+    <div>
+      <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '30px', fontSize: '2em' }}>
+        📑 Tabs Generator
+      </h2>
+      
+      <p style={{ textAlign: 'center', fontSize: '1.2em', color: '#666', marginBottom: '40px' }}>
+        Create and manage tabs with content. Generate HTML5 code that can be saved as a standalone file.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr', gap: '20px', minHeight: '600px' }}>
+        {/* Tabs Headers Panel */}
+        <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            <h3 style={{ color: '#333', margin: '0', fontSize: '1.5em' }}>Tabs Headers</h3>
+            <button
+              onClick={addTab}
+              style={{ 
+                backgroundColor: '#28a745', 
+                color: 'white', 
+                border: 'none', 
+                padding: '8px 12px', 
+                borderRadius: '4px', 
+                cursor: 'pointer',
+                fontSize: '16px',
+                fontWeight: 'bold'
+              }}
+              disabled={tabItems.length >= 15}
+            >
+              +
+            </button>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {tabItems.map((tab) => (
+              <div
+                key={tab.id}
+                style={{
+                  padding: '12px',
+                  backgroundColor: activeTabId === tab.id ? '#007bff' : 'white',
+                  color: activeTabId === tab.id ? 'white' : '#333',
+                  borderRadius: '6px',
+                  border: '1px solid #dee2e6',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+                onClick={() => setActiveTabId(tab.id)}
+              >
+                <div style={{ flex: 1 }}>
+                  {editingTabId === tab.id ? (
+                    <input
+                      type="text"
+                      value={editingHeader}
+                      onChange={(e) => setEditingHeader(e.target.value)}
+                      onBlur={() => updateTabHeader(tab.id, editingHeader)}
+                      onKeyPress={(e) => e.key === 'Enter' && updateTabHeader(tab.id, editingHeader)}
+                      style={{
+                        width: '100%',
+                        padding: '4px 8px',
+                        border: '1px solid #007bff',
+                        borderRadius: '4px',
+                        fontSize: '14px'
+                      }}
+                      autoFocus
+                    />
+                  ) : (
+                    <span 
+                      style={{ fontSize: '14px' }}
+                      onDoubleClick={() => startEditingHeader(tab.id, tab.header)}
+                    >
+                      {tab.header}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeTab(tab.id);
+                  }}
+                  style={{
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                    marginLeft: '8px'
+                  }}
+                >
+                  -
+                </button>
+              </div>
+            ))}
+          </div>
+          
+          <p style={{ fontSize: '12px', color: '#666', marginTop: '15px', textAlign: 'center' }}>
+            Double-click tab headers to edit • Max 15 tabs
+          </p>
+        </div>
+
+        {/* Tabs Content Panel */}
+        <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
+          <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.5em' }}>Tabs Content</h3>
+          
+          {tabItems.length > 0 && (
+            <div>
+              <h4 style={{ color: '#666', marginBottom: '15px', fontSize: '1.2em' }}>
+                {tabItems.find(tab => tab.id === activeTabId)?.header}
+              </h4>
+              
+              <textarea
+                value={tabItems.find(tab => tab.id === activeTabId)?.content || ''}
+                onChange={(e) => updateTabContent(activeTabId, e.target.value)}
+                style={{
+                  width: '100%',
+                  minHeight: '400px',
+                  padding: '15px',
+                  border: '1px solid #ddd',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontFamily: 'monospace',
+                  lineHeight: '1.4',
+                  resize: 'vertical'
+                }}
+                placeholder="Enter your content here...
+Use - for first level items
+Use -- for second level items
+Use --- for third level items"
+              />
+              
+              <div style={{ marginTop: '15px', fontSize: '12px', color: '#666' }}>
+                <strong>Formatting Guide:</strong><br/>
+                • Use <code>-</code> for first level items<br/>
+                • Use <code>--</code> for second level items<br/>
+                • Use <code>---</code> for third level items<br/>
+                • Each line will be converted to HTML list items
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Output Panel */}
+        <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h3 style={{ color: '#333', margin: '0', fontSize: '1.5em' }}>Output</h3>
+            <button
+              onClick={copyTabsCode}
+              style={{
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                padding: '8px 16px',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }}
+            >
+              📋 Copy
+            </button>
+          </div>
+          
+          <div style={{
+            backgroundColor: '#2d3748',
+            color: '#e2e8f0',
+            padding: '15px',
+            borderRadius: '6px',
+            fontSize: '11px',
+            lineHeight: '1.3',
+            maxHeight: '500px',
+            overflow: 'auto',
+            fontFamily: 'monospace'
+          }}>
+            <pre style={{ margin: '0', whiteSpace: 'pre-wrap' }}>
+              <code>{generateTabsHTML()}</code>
+            </pre>
+          </div>
+          
+          <div style={{ marginTop: '15px', fontSize: '12px', color: '#666' }}>
+            <strong>Instructions:</strong><br/>
+            • Click "Copy" to copy the HTML code<br/>
+            • Paste into a .html file<br/>
+            • Open in any web browser
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const GeneratorTab = () => (
     <div>
       <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '30px', fontSize: '2em' }}>
@@ -598,6 +1050,12 @@ export default function Home() {
       name: 'Coding Races',
       icon: '🏁',
       content: <CodingRacesTab />
+    },
+    {
+      id: 'tabs',
+      name: 'Tabs Generator',
+      icon: '📑',
+      content: <TabsTab />
     }
   ];
 
