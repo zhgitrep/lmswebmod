@@ -235,11 +235,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👨‍💻 Author
 
-**John Doe**
-- Student Number: 12345678
+**Zohaib Khan**
 - Course: Bachelor of Information Technology
 - Institution: La Trobe University
-- Email: john.doe@students.latrobe.edu.au
+- Email: zohaib.khan@students.latrobe.edu.au
 
 ## 🆘 Support
 
