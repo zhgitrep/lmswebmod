@@ -19,7 +19,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Copyright © {new Date().getFullYear()} John Doe, Student No. 12345678, {currentDate}
+            Copyright © {new Date().getFullYear()} Zohaib Khan, {currentDate}
           </p>
         </div>
       </div>
