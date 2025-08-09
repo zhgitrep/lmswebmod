@@ -883,8 +883,8 @@ Use --- for third level items"
           
           <div style={{ marginTop: '15px', fontSize: '12px', color: '#666' }}>
             <strong>Instructions:</strong><br/>
-            • Click "Save" to generate HTML code<br/>
-            • Click "Copy" to copy the HTML code<br/>
+            • Click &quot;Save&quot; to generate HTML code<br/>
+            • Click &quot;Copy&quot; to copy the HTML code<br/>
             • Paste into a .html file<br/>
             • Open in any web browser
           </div>
