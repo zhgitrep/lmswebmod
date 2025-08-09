@@ -55,12 +55,7 @@ export default function AboutPage() {
             
             <div style={{ marginBottom: '15px' }}>
               <strong style={{ color: '#333' }}>Name:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>John Doe</span>
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Student Number:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>12345678</span>
+              <span style={{ marginLeft: '10px', color: '#666' }}>Zohaib Khan</span>
             </div>
             
             <div style={{ marginBottom: '15px' }}>
