@@ -54,6 +54,13 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     }
   };
 
+  // Allow external components to trigger theme toggle via a custom event
+  useEffect(() => {
+    const handler = () => toggleTheme();
+    document.addEventListener('toggle-theme', handler as EventListener);
+    return () => document.removeEventListener('toggle-theme', handler as EventListener);
+  }, [theme]);
+
   // Provide context even before mounting to prevent errors
   const contextValue: ThemeContextType = {
     theme,

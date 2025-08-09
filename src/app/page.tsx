@@ -1156,63 +1156,86 @@ Use --- for third level items"
               ))}
             </div>
 
-            {/* Desktop Hamburger Menu Button */}
-            <button
-              onClick={() => setIsTabMenuOpen(!isTabMenuOpen)}
-              style={{ 
-                padding: '12px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                backgroundColor: 'white',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: '4px',
-                flexShrink: 0,
-                alignSelf: 'center',
-                minHeight: '50px',
-                marginLeft: '16px',
-                height: '50px',
-                justifyContent: 'center',
-                border: '1px solid #e5e7eb',
-                transition: 'all 0.3s ease'
-              }}
-              aria-label="Toggle tab menu"
-            >
-              <div style={{ width: '20px', height: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-                <span 
-                  style={{
-                    display: 'block',
-                    width: '18px',
-                    height: '2px',
-                    backgroundColor: '#666',
-                    transition: 'all 0.3s ease',
-                    transform: isTabMenuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none'
-                  }}
-                />
-                <span 
-                  style={{
-                    display: 'block',
-                    width: '18px',
-                    height: '2px',
-                    backgroundColor: '#666',
-                    margin: '4px 0',
-                    transition: 'all 0.3s ease',
-                    opacity: isTabMenuOpen ? '0' : '1'
-                  }}
-                />
-                <span 
-                  style={{
-                    display: 'block',
-                    width: '18px',
-                    height: '2px',
-                    backgroundColor: '#666',
-                    transition: 'all 0.3s ease',
-                    transform: isTabMenuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none'
-                  }}
-                />
-              </div>
-            </button>
+            {/* Desktop controls: Hamburger + Dark Mode toggle (page-level) */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '16px' }}>
+              <button
+                onClick={() => setIsTabMenuOpen(!isTabMenuOpen)}
+                style={{ 
+                  padding: '12px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  backgroundColor: 'white',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  flexShrink: 0,
+                  alignSelf: 'center',
+                  minHeight: '50px',
+                  height: '50px',
+                  justifyContent: 'center',
+                  border: '1px solid #e5e7eb',
+                  transition: 'all 0.3s ease'
+                }}
+                aria-label="Toggle tab menu"
+              >
+                <div style={{ width: '20px', height: '20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                  <span 
+                    style={{
+                      display: 'block',
+                      width: '18px',
+                      height: '2px',
+                      backgroundColor: '#666',
+                      transition: 'all 0.3s ease',
+                      transform: isTabMenuOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none'
+                    }}
+                  />
+                  <span 
+                    style={{
+                      display: 'block',
+                      width: '18px',
+                      height: '2px',
+                      backgroundColor: '#666',
+                      margin: '4px 0',
+                      transition: 'all 0.3s ease',
+                      opacity: isTabMenuOpen ? '0' : '1'
+                    }}
+                  />
+                  <span 
+                    style={{
+                      display: 'block',
+                      width: '18px',
+                      height: '2px',
+                      backgroundColor: '#666',
+                      transition: 'all 0.3s ease',
+                      transform: isTabMenuOpen ? 'rotate(-45deg) translate(5px, -5px)' : 'none'
+                    }}
+                  />
+                </div>
+              </button>
+              <button
+                onClick={() => {
+                  try {
+                    // Access theme toggle via a custom event for ThemeProvider
+                    document.dispatchEvent(new CustomEvent('toggle-theme'));
+                  } catch {}
+                }}
+                style={{
+                  padding: '12px 14px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  backgroundColor: 'white',
+                  border: '1px solid #e5e7eb',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+                aria-label="Toggle dark mode"
+              >
+                <span>🌙</span>
+                <span style={{ color: '#374151', fontSize: '14px' }} className="hidden sm:inline">Dark Mode</span>
+              </button>
+            </div>
           </div>
 
           {/* Tab Menu Dropdown */}
