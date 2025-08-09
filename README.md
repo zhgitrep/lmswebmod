@@ -1,6 +1,6 @@
 # LTU Moodle Step-by-Step Generator
 
-A comprehensive Next.js web application for generating HTML5 code, managing interactive tabs, and providing educational tools for La Trobe University students.
+A comprehensive Next.js web application for generating HTML5 code, managing interactive tabs
 
 ## 🚀 Features
 
@@ -236,9 +236,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👨‍💻 Author
 
 **Zohaib Khan**
-- Course: Bachelor of Information Technology
-- Institution: La Trobe University
-- Email: zohaib.khan@students.latrobe.edu.au
+
 
 ## 🆘 Support
 
@@ -257,5 +255,3 @@ If you encounter any issues:
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 
 ---
-
-**Note**: This project is designed for educational purposes at La Trobe University. For production use, additional security measures and testing should be implemented.
