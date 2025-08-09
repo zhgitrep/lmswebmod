@@ -19,18 +19,14 @@ interface TabItem {
 export default function Home() {
   const [activeTab, setActiveTab] = useState(() => {
     const savedTab = getCookie('activeTab');
-    return savedTab ? String(savedTab) : 'tabs';
+    const defaultTab = 'tabs';
+    const allowedTabs = ['about', 'escape-room', 'coding-races', 'tabs'];
+    const candidate = savedTab ? String(savedTab) : defaultTab;
+    return allowedTabs.includes(candidate) ? candidate : defaultTab;
   });
   const [isTabMenuOpen, setIsTabMenuOpen] = useState(false);
 
-  const [generatedCode, setGeneratedCode] = useState('');
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    backgroundColor: '#ffffff',
-    textColor: '#000000',
-    fontSize: '16px'
-  });
+  
 
   // Tabs functionality
   const [tabItems, setTabItems] = useState<TabItem[]>(() => {
@@ -535,124 +531,7 @@ ${tabItems.map(tab => `
     }
   };
 
-  const generateHTMLCode = () => {
-    const htmlCode = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${formData.title || 'Generated Page'}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: ${formData.backgroundColor};
-            color: ${formData.textColor};
-            font-size: ${formData.fontSize};
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        p {
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        .button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        .output {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 15px;
-            margin-top: 20px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            overflow-x: auto;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>${formData.title || 'Generated Page'}</h1>
-        <p>${formData.description || 'This is a dynamically generated HTML page with inline CSS and JavaScript.'}</p>
-        
-        <div style="text-align: center; margin: 20px 0;">
-            <button class="button" onclick="showAlert()">Click Me!</button>
-            <button class="button" onclick="changeBackground()">Change Background</button>
-            <button class="button" onclick="showTime()">Show Time</button>
-        </div>
-        
-        <div id="output" class="output"></div>
-    </div>
-
-    <script>
-        function showAlert() {
-            alert('Hello! This is a JavaScript alert.');
-        }
-        
-        function changeBackground() {
-            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            document.body.style.backgroundColor = randomColor;
-        }
-        
-        function showTime() {
-            const now = new Date();
-            const timeString = now.toLocaleString();
-            document.getElementById('output').innerHTML = 'Current time: ' + timeString;
-        }
-        
-        // Add some interactive features
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Page loaded successfully!');
-            
-            // Add click event to container
-            document.querySelector('.container').addEventListener('click', function(e) {
-                if (e.target.tagName !== 'BUTTON') {
-                    this.style.transform = 'scale(1.02)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 200);
-                }
-            });
-        });
-    </script>
-</body>
-</html>`;
-
-    setGeneratedCode(htmlCode);
-  };
-
-  useEffect(() => {
-    generateHTMLCode();
-  }, [formData]);
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedCode);
-    alert('Code copied to clipboard!');
-  };
+  // HTML5 generator code removed
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
@@ -893,137 +772,7 @@ Use --- for third level items"
     </div>
   );
 
-  const GeneratorTab = () => (
-    <div>
-      <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '30px', fontSize: '2em' }}>
-        🚀 HTML5 Code Generator
-      </h2>
-      
-      <p style={{ textAlign: 'center', fontSize: '1.2em', color: '#666', marginBottom: '40px' }}>
-        Generate HTML5 code with JavaScript and inline CSS
-      </p>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
-        {/* Form Section */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
-          <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.5em' }}>Customize Your Page</h3>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              Page Title:
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({...formData, title: e.target.value})}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
-              placeholder="Enter page title"
-            />
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              Description:
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px', minHeight: '80px', resize: 'vertical' }}
-              placeholder="Enter page description"
-            />
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              Background Color:
-            </label>
-            <input
-              type="color"
-              value={formData.backgroundColor}
-              onChange={(e) => setFormData({...formData, backgroundColor: e.target.value})}
-              style={{ width: '100%', height: '40px', border: '1px solid #ddd', borderRadius: '4px' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              Text Color:
-            </label>
-            <input
-              type="color"
-              value={formData.textColor}
-              onChange={(e) => setFormData({...formData, textColor: e.target.value})}
-              style={{ width: '100%', height: '40px', border: '1px solid #ddd', borderRadius: '4px' }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '15px' }}>
-            <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold', color: '#333' }}>
-              Font Size:
-            </label>
-            <select
-              value={formData.fontSize}
-              onChange={(e) => setFormData({...formData, fontSize: e.target.value})}
-              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', fontSize: '14px' }}
-            >
-              <option value="14px">Small (14px)</option>
-              <option value="16px">Medium (16px)</option>
-              <option value="18px">Large (18px)</option>
-              <option value="20px">Extra Large (20px)</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Preview Section */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
-          <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.5em' }}>Live Preview</h3>
-          
-          <div style={{
-            backgroundColor: formData.backgroundColor,
-            color: formData.textColor,
-            padding: '20px',
-            borderRadius: '8px',
-            fontSize: formData.fontSize,
-            minHeight: '200px',
-            border: '1px solid #ddd'
-          }}>
-            <h4 style={{ marginTop: '0', marginBottom: '10px' }}>
-              {formData.title || 'Generated Page'}
-            </h4>
-            <p style={{ margin: '0' }}>
-              {formData.description || 'This is a dynamically generated HTML page with inline CSS and JavaScript.'}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Generated Code Section */}
-      <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', border: '1px solid #dee2e6', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-          <h3 style={{ color: '#333', margin: '0', fontSize: '1.5em' }}>Generated HTML5 Code</h3>
-          <button
-            onClick={copyToClipboard}
-            style={{ backgroundColor: '#007bff', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '5px', cursor: 'pointer', fontSize: '14px' }}
-          >
-            📋 Copy Code
-          </button>
-        </div>
-        
-        <pre style={{
-          backgroundColor: '#2d3748',
-          color: '#e2e8f0',
-          padding: '20px',
-          borderRadius: '8px',
-          overflow: 'auto',
-          fontSize: '12px',
-          lineHeight: '1.4',
-          maxHeight: '400px'
-        }}>
-          <code>{generatedCode}</code>
-        </pre>
-      </div>
-    </div>
-  );
+  // HTML5 Generator removed
 
   const AboutTab = () => (
     <div>
@@ -1033,7 +782,7 @@ Use --- for third level items"
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
         {/* Personal Information */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
+      <div style={{ backgroundColor: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
           <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.8em' }}>📋 Personal Information</h3>
           
           <div style={{ marginBottom: '15px' }}>
@@ -1073,7 +822,7 @@ Use --- for third level items"
           
           <div style={{ marginBottom: '15px' }}>
             <strong style={{ color: '#333' }}>Features:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>HTML5 Code Generator, Dark/Light Mode</span>
+            <span style={{ marginLeft: '10px', color: '#666' }}>Tabs Generator, Dark/Light Mode</span>
           </div>
           
           <div style={{ marginBottom: '15px' }}>
@@ -1102,7 +851,7 @@ Use --- for third level items"
             <div style={{ fontSize: '4em', marginBottom: '20px' }}>📹</div>
             <h4 style={{ marginBottom: '10px', color: '#495057' }}>Video Tutorial Coming Soon</h4>
             <p style={{ margin: '0', fontSize: '1.1em' }}>
-              A comprehensive video tutorial will be added here to demonstrate how to use the HTML5 Code Generator.
+              A comprehensive video tutorial will be added here to demonstrate how to use the Tabs Generator.
             </p>
           </div>
         </div>
@@ -1301,12 +1050,6 @@ Use --- for third level items"
   );
 
   const tabs = [
-    {
-      id: 'generator',
-      name: 'HTML5 Generator',
-      icon: '🚀',
-      content: <GeneratorTab />
-    },
     {
       id: 'about',
       name: 'About',
