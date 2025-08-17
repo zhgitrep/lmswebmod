@@ -1,22 +1,22 @@
-# LTU Moodle Step-by-Step Generator
+# LTU Moodle App Generator
 
-A comprehensive Next.js web application for generating HTML5 code, managing interactive tabs
+A comprehensive Next.js web application for generating HTML5 code, managing interactive tabs, and providing educational tools for La Trobe University students.
 
 ## 🚀 Features
 
 ### Core Features
-- **HTML5 Code Generator**: Create complete HTML5 pages with inline CSS and JavaScript
-- **Tabs Generator**: Build interactive tabbed interfaces with custom content
+- **Tabs Generator**: Build interactive tabbed interfaces with custom content and step-by-step instructions
+- **About Section**: Student information, project details, and video tutorial
 - **Escape Room**: Interactive coding puzzles and challenges
 - **Coding Races**: Real-time programming competitions
-- **About Section**: Student information and project details
 
 ### Technical Features
 - **Responsive Design**: Mobile-first approach with responsive layouts
-- **Dark/Light Mode**: Theme switching capability
+- **Dark/Light Mode**: Theme switching capability with persistent preferences
 - **Cookie Management**: Persistent user preferences and navigation state
 - **Accessibility**: WCAG 2.1 AA compliant with proper ARIA labels
 - **TypeScript**: Full type safety and better development experience
+- **Video Integration**: Embedded Google Drive video tutorials
 
 ## 📋 Prerequisites
 
@@ -69,18 +69,6 @@ bun dev
 
 ## 🎯 Usage Guide
 
-### HTML5 Generator
-1. Navigate to the "HTML5 Generator" tab
-2. Customize your page settings:
-   - **Page Title**: Enter your desired page title
-   - **Description**: Add a description for your page
-   - **Background Color**: Choose a background color using the color picker
-   - **Text Color**: Select text color for better contrast
-   - **Font Size**: Choose from Small (14px) to Extra Large (20px)
-3. Preview your changes in real-time
-4. Click "📋 Copy Code" to copy the generated HTML5 code
-5. Save the code as a `.html` file and open in any web browser
-
 ### Tabs Generator
 1. Navigate to the "Tabs Generator" tab
 2. **Manage Tabs**:
@@ -93,9 +81,14 @@ bun dev
    - Use `--` for second-level items
    - Use `---` for third-level items
 4. **Generate Code**:
-   - Click "Save" to generate HTML code
+   - Click "💡 Save" to generate HTML code
    - Click "📋 Copy" to copy the generated code
    - Save as `.html` file and open in browser
+
+### About Section
+- View student information and project details
+- Watch embedded video tutorial for usage instructions
+- Access project documentation and features overview
 
 ### Escape Room
 - Interactive coding puzzles and challenges
@@ -123,11 +116,11 @@ ltu-moodle-clean/
 │   │   │   └── page.tsx          # Pre-lab page
 │   │   ├── components/
 │   │   │   ├── Footer.tsx        # Footer component
-│   │   │   ├── Header.tsx        # Header component
+│   │   │   ├── Header.tsx        # Header component with centered title
 │   │   │   └── ThemeProvider.tsx # Theme provider
 │   │   ├── globals.css           # Global styles
 │   │   ├── layout.tsx            # Root layout
-│   │   └── page.tsx              # Main page with tabs
+│   │   └── page.tsx              # Main page with tabs and video integration
 │   └── ...
 ├── public/                        # Static assets
 ├── package.json                   # Dependencies and scripts
@@ -154,8 +147,8 @@ bun dev              # Using Bun
 ## 🧰 Technology Stack
 
 ### Frontend
-- **Next.js 15.4.4**: React framework with App Router
-- **React 19.1.0**: UI library
+- **Next.js 15.4.4**: React framework with App Router and Turbopack
+- **React 19.1.0**: UI library with hooks and modern patterns
 - **TypeScript 5**: Type safety and better development experience
 - **Tailwind CSS 4.1.11**: Utility-first CSS framework
 
@@ -236,6 +229,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👨‍💻 Author
 
 **Zohaib Khan**
+- **Course**: Bachelor of Information Technology
+- **Institution**: La Trobe University
 
 
 ## 🆘 Support
@@ -245,7 +240,22 @@ If you encounter any issues:
 1. Check the browser console for errors
 2. Ensure all dependencies are installed correctly
 3. Verify Node.js version compatibility
-4. Create an issue in the repository
+4. Watch the embedded video tutorial in the About section
+5. Create an issue in the repository
+
+## 🔄 Recent Updates
+
+### Latest Features
+- ✅ **Enhanced Tabs Generator**: Improved UI with highlighted instructions and better user guidance
+- ✅ **Video Integration**: Embedded Google Drive video tutorial in About section
+- ✅ **UI Improvements**: Centered header title and optimized layout
+- ✅ **Tab Reordering**: Tabs Generator moved next to About for better accessibility
+- ✅ **Enhanced Instructions**: Prominent "Click Save to generate code" instruction with visual highlighting
+
+### Technical Improvements
+- ✅ **Header Centering**: Fixed title alignment with explicit inline styles
+- ✅ **Responsive Design**: Improved mobile and desktop layouts
+- ✅ **Code Quality**: Enhanced TypeScript types and component structure
 
 ## 📚 Learning Resources
 
