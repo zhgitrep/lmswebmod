@@ -667,10 +667,18 @@ ${tabItems.map(tab => `
                 {tabItems.find(tab => tab.id === activeTabId)?.header}
               </h4>
               
-              <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '12px', color: '#666' }}>
-                  {isGeneratingCode ? 'Generating Code...' : 'Click Save to generate code'}
-                </div>
+                             <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <div style={{ 
+                   fontSize: '14px', 
+                   color: '#007bff', 
+                   fontWeight: 'bold',
+                   backgroundColor: '#e3f2fd',
+                   padding: '8px 12px',
+                   borderRadius: '6px',
+                   border: '2px solid #007bff'
+                 }}>
+                   {isGeneratingCode ? '⏳ Generating Code...' : '💡 Click Save to generate code'}
+                 </div>
                 <button
                   onClick={handleSave}
                   disabled={isGeneratingCode}
@@ -795,85 +803,82 @@ Use --- for third level items"
         👨‍💻 About Me
       </h2>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
-        {/* Personal Information */}
-      <div style={{ backgroundColor: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
-          <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.8em' }}>📋 Personal Information</h3>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Name:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>Zohaib Khan</span>
-          </div>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Course:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>Bachelor of Information Technology</span>
-          </div>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Institution:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>La Trobe University</span>
-          </div>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Email:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>john.doe@students.latrobe.edu.au</span>
-          </div>
-        </div>
+             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+         {/* Personal Information */}
+       <div style={{ backgroundColor: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
+         <h3 style={{ color: '#333', marginBottom: '12px', fontSize: '1.3em' }}>📋 Personal Information</h3>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Name:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>Zohaib Khan</span>
+         </div>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Course:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>Bachelor of Information Technology</span>
+         </div>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Institution:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>La Trobe University</span>
+         </div>
+         
+         
+       </div>
 
-        {/* Project Information */}
-        <div style={{ backgroundColor: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
-          <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.8em' }}>🚀 Project Details</h3>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Project Name:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>LTU Moodle App Generator</span>
-          </div>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Technology Stack:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>Next.js, React, TypeScript</span>
-          </div>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Features:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>Tabs Generator, Dark/Light Mode</span>
-          </div>
-          
-          <div style={{ marginBottom: '15px' }}>
-            <strong style={{ color: '#333' }}>Accessibility:</strong>
-            <span style={{ marginLeft: '10px', color: '#666' }}>WCAG 2.1 AA Compliant</span>
-          </div>
-        </div>
-      </div>
+       {/* Project Information */}
+       <div style={{ backgroundColor: '#f8f9fa', padding: '12px', borderRadius: '8px', border: '1px solid #dee2e6' }}>
+         <h3 style={{ color: '#333', marginBottom: '12px', fontSize: '1.3em' }}>🚀 Project Details</h3>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Project Name:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>LTU Moodle App Generator</span>
+         </div>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Technology Stack:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>Next.js, React, TypeScript</span>
+         </div>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Features:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>Tabs Generator, Dark/Light Mode</span>
+         </div>
+         
+         <div style={{ marginBottom: '8px' }}>
+           <strong style={{ color: '#333' }}>Accessibility:</strong>
+           <span style={{ marginLeft: '10px', color: '#666' }}>WCAG 2.1 AA Compliant</span>
+         </div>
+       </div>
+     </div>
 
-      {/* Video Section */}
-      <div style={{ backgroundColor: '#f8f9fa', padding: '25px', borderRadius: '8px', border: '1px solid #dee2e6', marginBottom: '30px' }}>
-        <h3 style={{ color: '#333', marginBottom: '20px', fontSize: '1.8em', textAlign: 'center' }}>
-          🎥 How to Use This Website
-        </h3>
-        
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '400px',
-          backgroundColor: '#e9ecef',
-          borderRadius: '8px',
-          overflow: 'hidden'
-        }}>
-          <iframe
-            src="https://drive.google.com/file/d/1q2FUMAbisH65pXbbB1wlH1PO0-1oRDFb/preview"
-            width="100%"
-            height="400"
-            allow="autoplay"
-            style={{
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-            }}
-          ></iframe>
-        </div>
-      </div>
+             {/* Video Section */}
+       <div style={{ backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #dee2e6', marginBottom: '15px' }}>
+         <h3 style={{ color: '#333', marginBottom: '12px', fontSize: '1.5em', textAlign: 'center' }}>
+           🎥 How to Use This Website
+         </h3>
+         
+                   <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            minHeight: '600px',
+            backgroundColor: '#e9ecef',
+            borderRadius: '8px',
+            overflow: 'hidden'
+          }}>
+            <iframe
+              src="https://drive.google.com/file/d/1q2FUMAbisH65pXbbB1wlH1PO0-1oRDFb/preview"
+              width="100%"
+              height="600"
+              allow="autoplay"
+              style={{
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+              }}
+            ></iframe>
+          </div>
+       </div>
     </div>
   );
 
@@ -1067,32 +1072,32 @@ Use --- for third level items"
     </div>
   );
 
-  const tabs = [
-    {
-      id: 'about',
-      name: 'About',
-      icon: '👨‍💻',
-      content: <AboutTab />
-    },
-    {
-      id: 'escape-room',
-      name: 'Escape Room',
-      icon: '🚪',
-      content: <EscapeRoomTab />
-    },
-    {
-      id: 'coding-races',
-      name: 'Coding Races',
-      icon: '🏁',
-      content: <CodingRacesTab />
-    },
-    {
-      id: 'tabs',
-      name: 'Tabs Generator',
-      icon: '📑',
-      content: <TabsTab />
-    }
-  ];
+     const tabs = [
+     {
+       id: 'about',
+       name: 'About',
+       icon: '👨‍💻',
+       content: <AboutTab />
+     },
+     {
+       id: 'tabs',
+       name: 'Tabs Generator',
+       icon: '📑',
+       content: <TabsTab />
+     },
+     {
+       id: 'escape-room',
+       name: 'Escape Room',
+       icon: '🚪',
+       content: <EscapeRoomTab />
+     },
+     {
+       id: 'coding-races',
+       name: 'Coding Races',
+       icon: '🏁',
+       content: <CodingRacesTab />
+     }
+   ];
 
   const activeTabContent = tabs.find(tab => tab.id === activeTab);
 
