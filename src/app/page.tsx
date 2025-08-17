@@ -857,18 +857,21 @@ Use --- for third level items"
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          minHeight: '300px',
+          minHeight: '400px',
           backgroundColor: '#e9ecef',
           borderRadius: '8px',
-          border: '2px dashed #6c757d'
+          overflow: 'hidden'
         }}>
-          <div style={{ textAlign: 'center', color: '#6c757d' }}>
-            <div style={{ fontSize: '4em', marginBottom: '20px' }}>📹</div>
-            <h4 style={{ marginBottom: '10px', color: '#495057' }}>Video Tutorial Coming Soon</h4>
-            <p style={{ margin: '0', fontSize: '1.1em' }}>
-              A comprehensive video tutorial will be added here to demonstrate how to use the Tabs Generator.
-            </p>
-          </div>
+          <iframe
+            src="https://drive.google.com/file/d/1q2FUMAbisH65pXbbB1wlH1PO0-1oRDFb/preview"
+            width="100%"
+            height="400"
+            allow="autoplay"
+            style={{
+              borderRadius: '8px',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+            }}
+          ></iframe>
         </div>
       </div>
     </div>
