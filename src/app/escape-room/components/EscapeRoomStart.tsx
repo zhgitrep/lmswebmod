@@ -253,7 +253,7 @@ export default function EscapeRoomStart({ onStart }: EscapeRoomStartProps) {
                 <span className="text-3xl">💡</span>
                 <div>
                   <h3 className="font-semibold text-white text-lg">Progressive Hints</h3>
-                  <p className="text-gray-300">Get help when you're stuck</p>
+                  <p className="text-gray-300">Get help when you&apos;re stuck</p>
                 </div>
               </div>
               <div className="flex items-center space-x-4 p-4 bg-white/5 rounded-xl border border-white/10">

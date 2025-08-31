@@ -2,8 +2,16 @@
 
 import { useState } from 'react';
 
+interface GameState {
+  sessionId?: string;
+  score: number;
+  hintsUsed: number;
+  isCompleted: boolean;
+  timeRemaining: number;
+}
+
 interface SaveButtonProps {
-  gameState: any;
+  gameState: GameState;
   onSave?: () => void;
   className?: string;
 }
