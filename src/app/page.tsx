@@ -546,6 +546,12 @@ ${tabItems.map(tab => `
   // HTML5 generator code removed
 
   const handleTabChange = (tabId: string) => {
+    // Redirect to escape-room page if escape-room tab is clicked
+    if (tabId === 'escape-room') {
+      window.location.href = '/escape-room';
+      return;
+    }
+    
     setActiveTab(tabId);
     // Only run on client side
     if (typeof window !== 'undefined') {
@@ -887,6 +893,35 @@ Use --- for third level items"
       <h2 style={{ textAlign: 'center', color: '#333', marginBottom: '30px', fontSize: '2em' }}>
         🚪 Escape Room
       </h2>
+
+      {/* Start Game Button */}
+      <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+        <button
+          onClick={() => window.location.href = '/escape-room'}
+          style={{
+            backgroundColor: '#2563eb',
+            color: 'white',
+            padding: '16px 32px',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '18px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#1d4ed8';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#2563eb';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          🎮 Start Escape Room Game
+        </button>
+      </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px', marginBottom: '30px' }}>
         {/* Student Information */}

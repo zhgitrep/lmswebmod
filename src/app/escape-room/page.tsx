@@ -1,297 +1,306 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { setCookie } from 'cookies-next';
+import EscapeRoomGame from './components/EscapeRoomGame';
+import EscapeRoomStart from './components/EscapeRoomStart';
+import EscapeRoomComplete from './components/EscapeRoomComplete';
+
+export type GameStage = {
+  id: number;
+  title: string;
+  description: string;
+  type: 'code-format' | 'debug-click' | 'number-generator' | 'data-port' | 'css-puzzle' | 'logic-gate';
+  completed: boolean;
+  timeSpent: number;
+  hints: string[];
+  currentHint: number;
+};
+
+export type GameState = {
+  isStarted: boolean;
+  isCompleted: boolean;
+  currentStage: number;
+  timeRemaining: number;
+  totalTime: number;
+  stages: GameStage[];
+  score: number;
+  hintsUsed: number;
+  sessionId?: string; // Database session ID
+};
 
 export default function EscapeRoomPage() {
+  const [gameState, setGameState] = useState<GameState>({
+    isStarted: false,
+    isCompleted: false,
+    currentStage: 0,
+    timeRemaining: 45 * 60, // 45 minutes in seconds
+    totalTime: 45 * 60,
+    stages: [
+      {
+        id: 1,
+        title: "Code Formatting Challenge",
+        description: "Format the given JavaScript code correctly to unlock the door.",
+        type: 'code-format',
+        completed: false,
+        timeSpent: 0,
+        hints: [
+          "Check for proper indentation and spacing",
+          "Look for missing semicolons and brackets",
+          "Ensure consistent naming conventions"
+        ],
+        currentHint: 0
+      },
+      {
+        id: 2,
+        title: "Debug Click Challenge",
+        description: "Click on the image that contains the debugging tool to proceed.",
+        type: 'debug-click',
+        completed: false,
+        timeSpent: 0,
+        hints: [
+          "Look for visual clues in the images",
+          "Think about what debugging tools look like",
+          "Check for console or terminal symbols"
+        ],
+        currentHint: 0
+      },
+      {
+        id: 3,
+        title: "Number Generator",
+        description: "Write code to generate all numbers from 0 to 1000.",
+        type: 'number-generator',
+        completed: false,
+        timeSpent: 0,
+        hints: [
+          "Use a loop to iterate through numbers",
+          "Consider using a for loop or while loop",
+          "Make sure to include both 0 and 1000"
+        ],
+        currentHint: 0
+      },
+      {
+        id: 4,
+        title: "Data Port Challenge",
+        description: "Convert data from JSON format to CSV format.",
+        type: 'data-port',
+        completed: false,
+        timeSpent: 0,
+        hints: [
+          "Parse the JSON data first",
+          "Extract the required fields",
+          "Format as comma-separated values"
+        ],
+        currentHint: 0
+      },
+      {
+        id: 5,
+        title: "CSS Positioning Puzzle",
+        description: "Use CSS to position elements correctly and find the hidden path.",
+        type: 'css-puzzle',
+        completed: false,
+        timeSpent: 0,
+        hints: [
+          "Use absolute positioning to place elements",
+          "Consider z-index for layering",
+          "Use transform properties for precise positioning"
+        ],
+        currentHint: 0
+      },
+      {
+        id: 6,
+        title: "Logic Gate Challenge",
+        description: "Solve the boolean logic puzzle using AND, OR, and NOT gates.",
+        type: 'logic-gate',
+        completed: false,
+        timeSpent: 0,
+        hints: [
+          "Start with the input values",
+          "Follow the signal through each gate",
+          "Use truth tables to verify your answer"
+        ],
+        currentHint: 0
+      }
+    ],
+    score: 0,
+    hintsUsed: 0
+  });
+
   useEffect(() => {
-    // Set active menu to escape-room when page loads
     setCookie('activeMenu', '/escape-room', { maxAge: 60 * 60 * 24 * 7 });
   }, []);
 
+  // Check for test mode - you can add ?test=challenge_number to URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const testChallenge = urlParams.get('test');
+    
+    if (testChallenge) {
+      const challengeIndex = parseInt(testChallenge) - 1; // Convert to 0-based index
+      if (challengeIndex >= 0 && challengeIndex < gameState.stages.length) {
+        // Start game and jump to specific challenge
+        setGameState(prev => ({
+          ...prev,
+          isStarted: true,
+          currentStage: challengeIndex,
+          timeRemaining: 60 * 60, // Give 60 minutes for testing
+          totalTime: 60 * 60
+        }));
+      }
+    }
+  }, [gameState.stages.length]);
+
+  const startGame = useCallback(async (customTime?: number) => {
+    const timeInSeconds = (customTime || 45) * 60;
+    
+    try {
+      // Create game session in database
+      const response = await fetch('/api/game-sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          playerName: 'Zohaib Khan',
+          course: 'Bachelor of IT',
+          module: 'Interactive Web Dev',
+          totalTime: timeInSeconds,
+          timeRemaining: timeInSeconds,
+          customTimerDuration: customTime,
+        }),
+      });
+
+      if (response.ok) {
+        const sessionData = await response.json();
+        setGameState(prev => ({
+          ...prev,
+          isStarted: true,
+          timeRemaining: timeInSeconds,
+          totalTime: timeInSeconds,
+          sessionId: sessionData.id
+        }));
+      } else {
+        console.error('Failed to create game session');
+        // Still start the game even if database save fails
+        setGameState(prev => ({
+          ...prev,
+          isStarted: true,
+          timeRemaining: timeInSeconds,
+          totalTime: timeInSeconds
+        }));
+      }
+    } catch (error) {
+      console.error('Error creating game session:', error);
+      // Still start the game even if database save fails
+      setGameState(prev => ({
+        ...prev,
+        isStarted: true,
+        timeRemaining: timeInSeconds,
+        totalTime: timeInSeconds
+      }));
+    }
+  }, []);
+
+  const completeStage = useCallback(async (stageId: number, timeSpent: number) => {
+    setGameState(prev => {
+      const updatedStages = prev.stages.map(stage => 
+        stage.id === stageId 
+          ? { ...stage, completed: true, timeSpent }
+          : stage
+      );
+      
+      const nextStage = prev.currentStage + 1;
+      const isCompleted = nextStage >= prev.stages.length;
+      
+      return {
+        ...prev,
+        stages: updatedStages,
+        currentStage: isCompleted ? prev.currentStage : nextStage,
+        isCompleted,
+        score: prev.score + Math.max(0, 100 - timeSpent / 60) // Score based on time
+      };
+    });
+
+    // Save stage completion to database
+    if (gameState.sessionId) {
+      try {
+        const currentStage = gameState.stages.find(stage => stage.id === stageId);
+        if (currentStage) {
+          await fetch('/api/stages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              gameSessionId: gameState.sessionId,
+              stageId: stageId,
+              stageTitle: currentStage.title,
+              stageType: currentStage.type,
+              completed: true,
+              timeSpent: timeSpent,
+              hintsUsed: currentStage.currentHint,
+            }),
+          });
+        }
+      } catch (error) {
+        console.error('Error saving stage completion:', error);
+      }
+    }
+  }, [gameState.sessionId, gameState.stages]);
+
+  const useHint = useCallback((stageId: number) => {
+    setGameState(prev => {
+      const updatedStages = prev.stages.map(stage => 
+        stage.id === stageId 
+          ? { ...stage, currentHint: Math.min(stage.currentHint + 1, stage.hints.length - 1) }
+          : stage
+      );
+      
+      return {
+        ...prev,
+        stages: updatedStages,
+        hintsUsed: prev.hintsUsed + 1
+      };
+    });
+  }, []);
+
+  const resetGame = useCallback(() => {
+    setGameState({
+      isStarted: false,
+      isCompleted: false,
+      currentStage: 0,
+      timeRemaining: 45 * 60,
+      totalTime: 45 * 60,
+      stages: gameState.stages.map(stage => ({
+        ...stage,
+        completed: false,
+        timeSpent: 0,
+        currentHint: 0
+      })),
+      score: 0,
+      hintsUsed: 0
+    });
+  }, [gameState.stages]);
+
+  if (!gameState.isStarted) {
+    return <EscapeRoomStart onStart={startGame} />;
+  }
+
+  if (gameState.isCompleted) {
+    return (
+      <EscapeRoomComplete 
+        gameState={gameState}
+        onReset={resetGame}
+      />
+    );
+  }
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: '#f5f5f5',
-      padding: '20px'
-    }}>
-      <div style={{
-        maxWidth: '1000px',
-        margin: '0 auto',
-        backgroundColor: 'white',
-        borderRadius: '10px',
-        padding: '30px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }}>
-        <h1 style={{
-          textAlign: 'center',
-          color: '#333',
-          marginBottom: '30px',
-          fontSize: '2.5em'
-        }}>
-          🚪 Escape Room
-        </h1>
-
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '30px',
-          marginBottom: '30px'
-        }}>
-          {/* Student Information */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            padding: '25px',
-            borderRadius: '8px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h2 style={{
-              color: '#333',
-              marginBottom: '20px',
-              fontSize: '1.8em'
-            }}>
-              👨‍🎓 Student Information
-            </h2>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Name:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>Zohaib Khan</span>
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Course:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>Bachelor of Information Technology</span>
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Module:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>Interactive Web Development</span>
-            </div>
-          </div>
-
-          {/* Game Overview */}
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            padding: '25px',
-            borderRadius: '8px',
-            border: '1px solid #dee2e6'
-          }}>
-            <h2 style={{
-              color: '#333',
-              marginBottom: '20px',
-              fontSize: '1.8em'
-            }}>
-              🎮 Game Overview
-            </h2>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Theme:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>Digital Code Escape</span>
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Duration:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>45 minutes</span>
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Puzzles:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>8 Interactive Puzzles</span>
-            </div>
-            
-            <div style={{ marginBottom: '15px' }}>
-              <strong style={{ color: '#333' }}>Status:</strong>
-              <span style={{ marginLeft: '10px', color: '#666' }}>Ready to Start</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Game Levels */}
-        <div style={{
-          backgroundColor: '#f8f9fa',
-          padding: '25px',
-          borderRadius: '8px',
-          border: '1px solid #dee2e6',
-          marginBottom: '30px'
-        }}>
-          <h2 style={{
-            color: '#333',
-            marginBottom: '20px',
-            fontSize: '1.8em',
-            textAlign: 'center'
-          }}>
-            🎯 Game Levels
-          </h2>
-          
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '20px'
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              border: '1px solid #dc3545',
-              boxShadow: '0 2px 4px rgba(220, 53, 69, 0.1)'
-            }}>
-              <h3 style={{ color: '#dc3545', marginBottom: '15px', fontSize: '1.3em' }}>
-                🔓 Level 1: Code Breaker
-              </h3>
-              <p style={{ marginBottom: '15px', color: '#666' }}>
-                Decrypt the hidden message using binary code patterns.
-              </p>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <span style={{ color: '#dc3545', fontSize: '0.9em' }}>2 puzzles</span>
-                <button style={{
-                  backgroundColor: '#dc3545',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9em'
-                }}>
-                  Start Level
-                </button>
-              </div>
-            </div>
-            
-            <div style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              border: '1px solid #fd7e14',
-              boxShadow: '0 2px 4px rgba(253, 126, 20, 0.1)'
-            }}>
-              <h3 style={{ color: '#fd7e14', marginBottom: '15px', fontSize: '1.3em' }}>
-                🧩 Level 2: Logic Labyrinth
-              </h3>
-              <p style={{ marginBottom: '15px', color: '#666' }}>
-                Navigate through boolean logic gates and truth tables.
-              </p>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <span style={{ color: '#fd7e14', fontSize: '0.9em' }}>3 puzzles</span>
-                <button style={{
-                  backgroundColor: '#fd7e14',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9em'
-                }}>
-                  Start Level
-                </button>
-              </div>
-            </div>
-            
-            <div style={{
-              backgroundColor: 'white',
-              padding: '20px',
-              borderRadius: '8px',
-              border: '1px solid #28a745',
-              boxShadow: '0 2px 4px rgba(40, 167, 69, 0.1)'
-            }}>
-              <h3 style={{ color: '#28a745', marginBottom: '15px', fontSize: '1.3em' }}>
-                🎨 Level 3: CSS Maze
-              </h3>
-              <p style={{ marginBottom: '15px', color: '#666' }}>
-                Solve CSS positioning puzzles to find the hidden path.
-              </p>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <span style={{ color: '#28a745', fontSize: '0.9em' }}>3 puzzles</span>
-                <button style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '0.9em'
-                }}>
-                  Start Level
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Game Features */}
-        <div style={{
-          backgroundColor: '#e8f5e8',
-          padding: '25px',
-          borderRadius: '8px',
-          border: '1px solid #4caf50'
-        }}>
-          <h2 style={{
-            color: '#2e7d32',
-            marginBottom: '20px',
-            fontSize: '1.8em',
-            textAlign: 'center'
-          }}>
-            🎮 Game Features
-          </h2>
-          
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '20px'
-          }}>
-            <div style={{
-              backgroundColor: 'white',
-              padding: '15px',
-              borderRadius: '5px',
-              border: '1px solid #4caf50'
-            }}>
-              <h3 style={{ color: '#2e7d32', marginBottom: '10px' }}>⏱️ Timer</h3>
-              <p style={{ margin: '0', color: '#666' }}>45-minute countdown timer with hints</p>
-            </div>
-            
-            <div style={{
-              backgroundColor: 'white',
-              padding: '15px',
-              borderRadius: '5px',
-              border: '1px solid #4caf50'
-            }}>
-              <h3 style={{ color: '#2e7d32', marginBottom: '10px' }}>💡 Hints</h3>
-              <p style={{ margin: '0', color: '#666' }}>Get help when stuck with progressive hints</p>
-            </div>
-            
-            <div style={{
-              backgroundColor: 'white',
-              padding: '15px',
-              borderRadius: '5px',
-              border: '1px solid #4caf50'
-            }}>
-              <h3 style={{ color: '#2e7d32', marginBottom: '10px' }}>🏆 Achievements</h3>
-              <p style={{ margin: '0', color: '#666' }}>Earn badges for completing puzzles quickly</p>
-            </div>
-            
-            <div style={{
-              backgroundColor: 'white',
-              padding: '15px',
-              borderRadius: '5px',
-              border: '1px solid #4caf50'
-            }}>
-              <h3 style={{ color: '#2e7d32', marginBottom: '10px' }}>📊 Progress</h3>
-              <p style={{ margin: '0', color: '#666' }}>Track your progress and completion time</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <EscapeRoomGame
+      gameState={gameState}
+      setGameState={setGameState}
+      onCompleteStage={completeStage}
+      onUseHint={useHint}
+    />
   );
 } 
