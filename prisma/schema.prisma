@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model GameSession {
+  id          String   @id @default(cuid())
+  playerName  String
+  course      String
+  module      String
+  startTime   DateTime @default(now())
+  endTime     DateTime?
+  totalTime   Int      // in seconds
+  timeRemaining Int    // in seconds
+  score       Int      @default(0)
+  hintsUsed   Int      @default(0)
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  stages      StageCompletion[]
+  customTimer CustomTimer?
+
+  @@map("game_sessions")
+}
+
+model StageCompletion {
+  id          String   @id @default(cuid())
+  gameSessionId String
+  stageId     Int
+  stageTitle  String
+  stageType   String
+  completed   Boolean  @default(false)
+  timeSpent   Int      // in seconds
+  hintsUsed   Int      @default(0)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  gameSession GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+
+  @@map("stage_completions")
+}
+
+model CustomTimer {
+  id          String   @id @default(cuid())
+  gameSessionId String  @unique
+  duration    Int      // in minutes
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  gameSession GameSession @relation(fields: [gameSessionId], references: [id], onDelete: Cascade)
+
+  @@map("custom_timers")
+}
+
+model GameStats {
+  id          String   @id @default(cuid())
+  totalGames  Int      @default(0)
+  completedGames Int   @default(0)
+  averageScore Float   @default(0)
+  averageTime  Float   @default(0) // in minutes
+  totalHintsUsed Int   @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("game_stats")
+}
