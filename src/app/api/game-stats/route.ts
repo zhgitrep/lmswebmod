@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { GameSession } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 
 // Vercel Function Configuration
@@ -25,20 +26,20 @@ export async function GET() {
 
     // Calculate real-time stats from game sessions
     const allSessions = await prisma.gameSession.findMany();
-    const completedSessions = allSessions.filter(session => session.isCompleted);
+    const completedSessions = allSessions.filter((session: GameSession) => session.isCompleted);
 
     const totalGames = allSessions.length;
     const completedGames = completedSessions.length;
     const averageScore = completedGames > 0 
-      ? completedSessions.reduce((sum, session) => sum + session.score, 0) / completedGames 
+      ? completedSessions.reduce((sum: number, session: GameSession) => sum + session.score, 0) / completedGames 
       : 0;
     const averageTime = completedGames > 0 
-      ? completedSessions.reduce((sum, session) => {
+      ? completedSessions.reduce((sum: number, session: GameSession) => {
           const timeSpent = session.totalTime - session.timeRemaining;
           return sum + (timeSpent / 60); // Convert to minutes
         }, 0) / completedGames 
       : 0;
-    const totalHintsUsed = allSessions.reduce((sum, session) => sum + session.hintsUsed, 0);
+    const totalHintsUsed = allSessions.reduce((sum: number, session: GameSession) => sum + session.hintsUsed, 0);
 
     // Update stats
     const updatedStats = await prisma.gameStats.update({
