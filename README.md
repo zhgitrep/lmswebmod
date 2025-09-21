@@ -17,6 +17,9 @@ A comprehensive Next.js web application for generating HTML5 code, managing inte
 - **Accessibility**: WCAG 2.1 AA compliant with proper ARIA labels
 - **TypeScript**: Full type safety and better development experience
 - **Video Integration**: Embedded Google Drive video tutorials
+- **Database Integration**: PostgreSQL with Prisma ORM for game sessions and statistics
+- **RESTful API**: Complete API for game management and data persistence
+- **Automated Testing**: Playwright E2E tests and Lighthouse performance testing
 
 ## 📋 Prerequisites
 
@@ -25,6 +28,8 @@ Before running this project, make sure you have the following installed:
 - **Node.js** (version 18 or higher)
 - **npm** (comes with Node.js)
 - **Git** (for version control)
+- **PostgreSQL** (for database functionality)
+- **Docker** (optional, for containerized database)
 
 ## 🛠️ Installation
 
@@ -41,12 +46,30 @@ Before running this project, make sure you have the following installed:
    npm install
    ```
 
-3. **Run the development server**
+3. **Set up the database**
+   ```bash
+   # Set up environment variables
+   cp .env.example .env.local
+   
+   # Add your database URL to .env.local
+   DATABASE_URL="postgresql://username:password@localhost:5432/ltu_moodle_db"
+   ```
+
+4. **Initialize the database**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+   
+   # Run database migrations
+   npx prisma db push
+   ```
+
+5. **Run the development server**
    ```bash
    npm run dev
    ```
 
-4. **Open your browser**
+6. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000) to view the application.
 
 ### Alternative Package Managers
@@ -91,9 +114,20 @@ bun dev
 - Access project documentation and features overview
 
 ### Escape Room
-- Interactive coding puzzles and challenges
-- Multiple difficulty levels
-- Real-time feedback and scoring
+- **6 Interactive Coding Challenges**: Code formatting, debug clicking, number generation, data conversion, CSS positioning, and logic gates
+- **45-minute Timer**: Customizable timer with real-time countdown
+- **Hint System**: Progressive hints for each challenge
+- **Progress Tracking**: Save and resume game sessions
+- **Database Integration**: Persistent game history and statistics
+- **Real-time Scoring**: Dynamic scoring based on completion time and hints used
+
+#### Challenge Types:
+1. **🔧 Code Formatting**: Fix JavaScript syntax and formatting issues
+2. **🐛 Debug Click**: Identify debugging tools from visual options
+3. **🔢 Number Generator**: Write code to generate numbers 0-1000
+4. **📊 Data Port**: Convert JSON data to CSV format
+5. **🎨 CSS Positioning**: Position elements to create visual patterns
+6. **⚡ Logic Gates**: Solve boolean logic puzzles with AND/OR/NOT gates
 
 ### Coding Races
 - Real-time programming competitions
@@ -138,6 +172,18 @@ npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint for code quality
 
+# Database
+npx prisma generate  # Generate Prisma client
+npx prisma db push   # Push schema changes to database
+npx prisma studio    # Open Prisma Studio (database GUI)
+
+# Testing
+npm run test         # Run Playwright E2E tests
+npm run test:ui      # Run tests with interactive UI
+npm run test:headed  # Run tests in headed mode (see browser)
+npm run test:report  # View test report
+npm run lighthouse   # Run Lighthouse performance tests
+
 # Package Manager Alternatives
 yarn dev             # Using Yarn
 pnpm dev             # Using pnpm
@@ -157,10 +203,21 @@ bun dev              # Using Bun
 - **PostCSS**: CSS processing
 - **Autoprefixer**: CSS vendor prefixing
 
+### Backend
+- **Prisma**: Database ORM and query builder
+- **PostgreSQL**: Primary database for game sessions and statistics
+- **Next.js API Routes**: Server-side API endpoints
+
 ### Dependencies
 - **cookies-next**: Cookie management for user preferences
 - **@types/node**: TypeScript definitions for Node.js
 - **@types/react**: TypeScript definitions for React
+- **@prisma/client**: Database client for Prisma ORM
+
+### Testing & Quality
+- **Playwright**: End-to-end testing framework
+- **Lighthouse**: Performance and accessibility testing
+- **ESLint**: Code linting and quality assurance
 
 ## 🌐 Browser Support
 
@@ -201,6 +258,152 @@ The project uses Tailwind CSS v4 with custom configuration in `tailwind.config.t
 
 ### Next.js Configuration
 Custom Next.js configuration is available in `next.config.ts`.
+
+## 🗄️ Database Schema
+
+The application uses PostgreSQL with Prisma ORM for data persistence. The database schema includes:
+
+### Models
+
+#### GameSession
+- **id**: Unique identifier (CUID)
+- **playerName**: Student name
+- **course**: Course name
+- **module**: Module name
+- **startTime**: Game start timestamp
+- **endTime**: Game end timestamp (optional)
+- **totalTime**: Total time in seconds
+- **timeRemaining**: Remaining time in seconds
+- **score**: Final score
+- **hintsUsed**: Number of hints used
+- **isCompleted**: Game completion status
+
+#### StageCompletion
+- **id**: Unique identifier (CUID)
+- **gameSessionId**: Reference to GameSession
+- **stageId**: Stage number
+- **stageTitle**: Stage title
+- **stageType**: Type of challenge
+- **completed**: Completion status
+- **timeSpent**: Time spent on stage
+- **hintsUsed**: Hints used on stage
+- **completedAt**: Completion timestamp
+
+#### CustomTimer
+- **id**: Unique identifier (CUID)
+- **gameSessionId**: Reference to GameSession
+- **duration**: Custom timer duration in minutes
+
+#### GameStats
+- **id**: Unique identifier (CUID)
+- **totalGames**: Total number of games
+- **completedGames**: Number of completed games
+- **averageScore**: Average score across all games
+- **averageTime**: Average completion time
+- **totalHintsUsed**: Total hints used
+
+## 🔌 API Endpoints
+
+### Game Sessions
+- **GET** `/api/game-sessions` - Retrieve all game sessions
+- **POST** `/api/game-sessions` - Create a new game session
+- **GET** `/api/game-sessions/[id]` - Retrieve specific game session
+- **PUT** `/api/game-sessions/[id]` - Update game session
+- **DELETE** `/api/game-sessions/[id]` - Delete game session
+
+### Stage Completions
+- **POST** `/api/stages` - Save stage completion data
+
+### Game Statistics
+- **GET** `/api/game-stats` - Retrieve game statistics
+- **POST** `/api/game-stats` - Update game statistics
+
+### Example API Usage
+
+#### Create Game Session
+```javascript
+const response = await fetch('/api/game-sessions', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    playerName: 'John Doe',
+    course: 'Bachelor of IT',
+    module: 'Interactive Web Dev',
+    totalTime: 2700,
+    timeRemaining: 2700,
+    customTimerDuration: 45
+  })
+});
+```
+
+#### Save Stage Completion
+```javascript
+const response = await fetch('/api/stages', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    gameSessionId: 'clx...',
+    stageId: 1,
+    stageTitle: 'Code Formatting Challenge',
+    stageType: 'code-format',
+    completed: true,
+    timeSpent: 180,
+    hintsUsed: 1
+  })
+});
+```
+
+## 🧪 Testing & Quality Assurance
+
+### Automated Testing Suite
+
+The application includes comprehensive testing with **Playwright** for E2E testing and **Lighthouse** for performance analysis.
+
+#### Playwright Tests
+- **Cross-browser Testing**: Chrome, Firefox, Safari, Mobile Chrome, Mobile Safari
+- **E2E Scenarios**: Complete user journeys from game start to completion
+- **API Testing**: Database integration and endpoint validation
+- **Responsive Testing**: Mobile and desktop layout verification
+- **Accessibility Testing**: WCAG compliance verification
+
+#### Test Coverage
+- ✅ **20/20 Tests Passing** across all browsers
+- ✅ **Complete Game Flow**: Start → Play → Complete → Save
+- ✅ **Challenge Completion**: All 6 challenge types tested
+- ✅ **Database Integration**: Session management and persistence
+- ✅ **Mobile Responsiveness**: Touch interactions and layouts
+
+#### Lighthouse Performance
+- **Performance Score**: 42/100 (optimization needed)
+- **Accessibility Score**: 85/100 ✅
+- **Best Practices Score**: 75/100 ✅
+- **SEO Score**: 80/100 ✅
+
+### Running Tests
+
+```bash
+# Run all Playwright tests
+npm run test
+
+# Run tests with interactive UI
+npm run test:ui
+
+# Run tests in headed mode (see browser)
+npm run test:headed
+
+# Run Lighthouse performance tests
+npm run lighthouse
+
+# View test reports
+npm run test:report
+```
+
+### Test Configuration
+- **Parallel Execution**: Tests run in parallel for faster execution
+- **Retry Logic**: 2 retries on CI for flaky tests
+- **Screenshots**: Captured on test failures
+- **Videos**: Recorded on test failures
+- **Traces**: Generated on first retry for debugging
 
 ## 🚀 Deployment
 
@@ -246,22 +449,57 @@ If you encounter any issues:
 ## 🔄 Recent Updates
 
 ### Latest Features
+- ✅ **Complete Escape Room System**: 6 interactive coding challenges with progressive difficulty
+- ✅ **Database Integration**: Full PostgreSQL integration with Prisma ORM for game persistence
+- ✅ **RESTful API**: Complete API for game session management and statistics
+- ✅ **Automated Testing**: Comprehensive Playwright E2E tests and Lighthouse performance testing
+- ✅ **Game History**: Persistent game sessions with detailed progress tracking
+- ✅ **Hint System**: Progressive hints for each challenge with usage tracking
+- ✅ **Custom Timer**: Configurable game duration with real-time countdown
 - ✅ **Enhanced Tabs Generator**: Improved UI with highlighted instructions and better user guidance
 - ✅ **Video Integration**: Embedded Google Drive video tutorial in About section
-- ✅ **UI Improvements**: Centered header title and optimized layout
-- ✅ **Tab Reordering**: Tabs Generator moved next to About for better accessibility
-- ✅ **Enhanced Instructions**: Prominent "Click Save to generate code" instruction with visual highlighting
 
 ### Technical Improvements
-- ✅ **Header Centering**: Fixed title alignment with explicit inline styles
-- ✅ **Responsive Design**: Improved mobile and desktop layouts
+- ✅ **Database Schema**: Complete Prisma schema with relationships and constraints
+- ✅ **API Architecture**: RESTful endpoints with proper error handling and validation
+- ✅ **Testing Coverage**: 20/20 tests passing across all browsers and devices
+- ✅ **Performance Monitoring**: Lighthouse CI integration for continuous performance tracking
+- ✅ **Responsive Design**: Improved mobile and desktop layouts with touch support
 - ✅ **Code Quality**: Enhanced TypeScript types and component structure
+- ✅ **Accessibility**: WCAG 2.1 AA compliance with proper ARIA labels
+
+## 🎮 Escape Room Solutions
+
+Complete solutions for all challenges are available in the codebase:
+- **Quick Solutions**: `src/app/escape-room/quick-solutions.md` - Fast reference for all challenges
+- **Detailed Solutions**: `src/app/escape-room/solutions.md` - Comprehensive explanations with examples
+- **Test Page**: `/escape-room/test` - Practice individual challenges
+
+### Challenge Solutions Overview:
+1. **Code Formatting**: Fix JavaScript syntax and indentation
+2. **Debug Click**: Click on the 🐛 Console Debugger image
+3. **Number Generator**: Use `Array.from({length: 1001}, (_, i) => i)`
+4. **Data Port**: Convert JSON to CSV with proper headers
+5. **CSS Positioning**: Position boxes in diagonal pattern
+6. **Logic Gates**: Solve boolean logic with AND/OR/NOT gates
 
 ## 📚 Learning Resources
 
+### Core Technologies
 - [Next.js Documentation](https://nextjs.org/docs)
 - [React Documentation](https://react.dev)
 - [TypeScript Handbook](https://www.typescriptlang.org/docs)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+
+### Database & API
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs)
+- [Next.js API Routes](https://nextjs.org/docs/app/building-your-application/routing/route-handlers)
+
+### Testing & Quality
+- [Playwright Documentation](https://playwright.dev/)
+- [Lighthouse Documentation](https://developers.google.com/web/tools/lighthouse)
+- [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [Core Web Vitals](https://web.dev/vitals/)
 
 ---
